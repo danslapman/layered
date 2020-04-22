@@ -7,6 +7,8 @@ object HttpClient {
     def fetch(uri: String, method: String): Task[String]
   }
 
-  val fakeClient: URLayer[HttpConfig, Has[HttpClient.Service]] =
-    ZLayer.succeed((uri: String, method: String) => Task(s"Response from $method $uri"))
+  val fakeClient: URLayer[Has[HttpConfig], Has[Service]] =
+    ZLayer.fromService[HttpConfig, Service](_ =>
+      (uri: String, method: String) => Task(s"Response from $method $uri")
+    )
 }

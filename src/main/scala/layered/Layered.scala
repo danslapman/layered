@@ -4,9 +4,9 @@ import zio._
 import zio.console.Console
 
 object Layered extends App {
-  val configLayer: ULayer[Has[Config]] = ZLayer.succeed(Config(HttpConfig(false)))
+  val config: ULayer[Has[Config]] = ZLayer.succeed(Config(HttpConfig(false)))
 
-  val pekaLayer = configLayer >>> Config.httpLayer.map(_.get) >>> HttpClient.fakeClient >>> Peka.layer
+  val pekaLayer = (config >>> Config.httpLayer >>> HttpClient.fakeClient) ++ Metrics.layer >>> Peka.layer
 
   val fullLayer = ZEnv.live ++ pekaLayer
 
